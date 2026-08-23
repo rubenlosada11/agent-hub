@@ -1,41 +1,37 @@
-# HTML Hello
+# AgentHub — Panel de Administración
 
-The most basic boilerplate for any 4Geeks Academy student, start your very first website from scratch.
+Prototipo funcional de alta fidelidad de un **panel interno de administración** para AgentHub, una plataforma SaaS ficticia donde empresas alquilan agentes de IA preconfigurados equipados con distintas *skills* (navegación web, lectura de documentos, gestión de calendarios, consulta de información, ejecución de tareas de negocio).
 
-> There is a video tutorial on [how to use this template to create your very first website here](https://youtu.be/dfbDCMu_p-0).
+Este panel **no es** el producto público de cara al cliente: es la herramienta que usa el equipo de AgentHub para supervisar usuarios, agentes, skills, contrataciones y errores de ejecución de toda la plataforma.
 
-## What to do next?
+## Qué incluye el prototipo
 
-Create an `index.html` file with the [basic HTML structure](http://4geeks.com/lesson/what-is-html-learn-html#page-structure) and see it live by running a web-server using the following command:
+El panel es una aplicación de una sola página (`index.html`) con seis módulos, todos navegables desde un sidebar persistente sin recargar la página:
 
-```bash
-$ pip3 install flask && python3 server.py
-```
+- **Dashboard** — cuatro métricas clave del negocio (ingresos del mes, pérdidas por descuentos, agentes activos, agentes fallando) y un panel de actividad semanal de los agentes.
+- **Usuarios** — listado de clientes de la plataforma con su plan y estado de cuenta, con vista de detalle ampliada por usuario (empresa, historial de contratación, gasto total).
+- **Agentes** — inventario de agentes de IA desplegados, su propietario, estado operativo, las skills que tiene equipadas y su prompt de sistema configurable.
+- **Skills** — catálogo de capacidades disponibles para equipar en los agentes, con una explicación de qué es una skill y cuántos agentes la tienen habilitada.
+- **Contrataciones** — contratos de alquiler de agentes por cliente, con periodo, importe y desglose de precio por skill contratada.
+- **Log de errores** — incidencias de ejecución de los agentes, categorizadas por gravedad, con traza completa y opción de marcarlas como resueltas.
 
-- You can create as many HTML files as you want.
-- You can also create CSS files and import them into your website using a `<link>` tag placed between the `<head></head>` tags, like this:
+Todos los datos (usuarios, agentes, skills, contratos, errores) son ficticios pero **coherentes entre secciones**: un mismo agente, cliente o skill aparece con el mismo nombre allí donde se le referencia.
 
-```html
-<head>
-  ...
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  ...
-</head>
-```
+## Funcionalidad interactiva
 
-- If you want to use Tailwind CSS, add it optionally via the official Tailwind CSS v4 CDN inside the same `<head>`:
+- Navegación lateral entre las seis secciones con indicador de sección activa.
+- Menús de acciones contextuales (⋮) en cada tabla/listado, con comportamiento estándar de apertura, cierre y exclusión mutua.
+- Ventanas modales de detalle para usuarios, agentes, skills, contratos y errores, con cierre por botón o por clic fuera del contenido.
+- Lista de skills de cada agente, colapsada por defecto y expandible con una transición visual.
+- Modo claro/oscuro persistente entre sesiones, aplicado a todo el panel.
+- Diseño adaptado a escritorio y tablet.
 
-```html
-<head>
-  ...
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  ...
-</head>
-```
+## Cómo revisarlo
 
-### Contributors
+El prototipo no requiere instalación ni backend: basta con abrir `index.html` en un navegador para explorar el panel completo con datos precargados.
 
-This template was built as part of the [Full Stack Developer course](https://4geeksacademy.com/us/coding-bootcamps/part-time-full-stack-developer) at [4Geeks Academy Coding Bootcamp](https://4geeksacademy.com/us/coding-bootcamp) by [Alejandro Sanchez](https://twitter.com/alesanchezr) and [many other contributors](https://github.com/4GeeksAcademy/html-hello/graphs/contributors).
+La especificación funcional completa del proyecto —alcance, comportamiento esperado de cada componente y criterios de aceptación— está documentada en [`SPECS.md`](./SPECS.md).
 
-You can find other templates and resources like this at the [school's GitHub page](https://github.com/4geeksacademy/).
+## Alcance
+
+Es un prototipo de interfaz: no hay backend, API, base de datos ni persistencia real de cambios entre sesiones. El objetivo es validar la experiencia y el diseño del panel de administración, no una implementación productiva.
