@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentHub — Panel de Administración</title>
+<script>
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem('agenthub-theme'); } catch (e) {}
+    var wantsDark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (wantsDark) document.documentElement.classList.add('dark');
+  })();
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+</head>
+<body class="font-sans bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased">
+
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <nav id="sidebar" class="w-16 md:w-16 lg:w-64 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col h-screen sticky top-0 transition-all">
+      <div class="h-16 flex items-center gap-2 px-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
+        <svg class="w-7 h-7 text-indigo-600 dark:text-indigo-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12h8M8 8h5M8 16h4"/></svg>
+        <span class="hidden lg:inline font-bold text-lg tracking-tight">AgentHub</span>
+      </div>
+      <div class="flex-1 overflow-y-auto py-3">
+        <ul class="space-y-1 px-2">
+          <li>
+            <button data-section="dashboard" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none" title="Dashboard">
+              <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+              <span class="hidden lg:inline">Dashboard</span>
+            </button>
+          </li>
+          <li>
+            <button data-section="usuarios" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none" title="Usuarios">
+              <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span class="hidden lg:inline">Usuarios</span>
+            </button>
+          </li>
+          <li>
+            <button data-section="agentes" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none" title="Agentes">
+              <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg>
+              <span class="hidden lg:inline">Agentes</span>
+            </button>
+          </li>
+          <li>
+            <button data-section="skills" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none" title="Skills">
+              <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>
+              <span class="hidden lg:inline">Skills</span>
+            </button>
+          </li>
+          <li>
+            <button data-section="contrataciones" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none" title="Contrataciones">
+              <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/></svg>
+              <span class="hidden lg:inline">Contrataciones</span>
+            </button>
+          </li>
+          <li>
+            <button data-section="errores" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none" title="Log de errores">
+              <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+              <span class="hidden lg:inline">Log de errores</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="flex-1 flex flex-col min-w-0">
+
+      <!-- HEADER -->
+      <header class="h-16 shrink-0 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-4 sm:px-6">
+        <div class="min-w-0">
+          <h1 id="header-title" class="text-lg font-semibold truncate">Dashboard</h1>
+          <p id="header-subtitle" class="text-xs text-slate-500 dark:text-slate-400 truncate">Resumen general de la plataforma</p>
+        </div>
+        <div class="flex items-center gap-3 sm:gap-4 shrink-0">
+          <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none" title="Cambiar tema" aria-label="Cambiar tema claro/oscuro">
+            <svg id="icon-sun" class="w-5 h-5 text-amber-500 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+            <svg id="icon-moon" class="w-5 h-5 text-indigo-500 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <div class="hidden sm:block border-l border-slate-200 dark:border-slate-800 h-6"></div>
+          <div class="hidden sm:flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-semibold shrink-0">AD</div>
+            <div class="leading-tight">
+              <p class="text-sm font-medium">Ana Duarte</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Admin de Plataforma</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN -->
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6">
+
+        <!-- ===================== DASHBOARD ===================== -->
+        <section id="section-dashboard" class="space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-xl font-bold">Dashboard</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Vista general de la salud y el negocio de la plataforma</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <article class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400 flex items-center justify-center mb-3">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Ingresos totales este mes</p>
+              <p class="text-2xl font-bold mt-1">$48,320</p>
+              <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1">+12% vs. mes anterior</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400 flex items-center justify-center mb-3">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12H4M4 12l6-6M4 12l6 6"/></svg>
+              </div>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Pérdidas por descuentos y cupones</p>
+              <p class="text-2xl font-bold mt-1">$3,150</p>
+              <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">6.5% de los ingresos brutos</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div class="w-10 h-10 rounded-full bg-sky-100 text-sky-600 dark:bg-sky-900/40 dark:text-sky-400 flex items-center justify-center mb-3">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Agentes activos</p>
+              <p class="text-2xl font-bold mt-1">3</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">de 5 agentes totales</p>
+            </article>
+            <article class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 dark:bg-rose-900/40 dark:text-rose-400 flex items-center justify-center mb-3">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+              </div>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Agentes fallando</p>
+              <p class="text-2xl font-bold mt-1">1</p>
+              <p class="text-xs text-rose-600 dark:text-rose-400 mt-1">requiere atención — Nova Support Agent</p>
+            </article>
+          </div>
+
+          <div class="flex flex-col lg:flex-row gap-4">
+            <article class="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+              <h3 class="font-semibold">Actividad semanal de agentes</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Ejecuciones completadas por día (últimos 7 días)</p>
+              <div class="flex items-end justify-between gap-3 h-56 border-b border-slate-200 dark:border-slate-800 pb-0">
+                <div class="flex flex-col items-center justify-end h-full flex-1 gap-1">
+                  <span class="text-xs font-medium text-slate-600 dark:text-slate-300">32</span>
+                  <div class="w-full max-w-10 h-24 bg-indigo-500 dark:bg-indigo-500/80 rounded-t-md"></div>
+                  <span class="text-xs text-slate-400 mt-1">Lun</span>
+                </div>
+                <div class="flex flex-col items-center justify-end h-full flex-1 gap-1">
+                  <span class="text-xs font-medium text-slate-600 dark:text-slate-300">58</span>
+                  <div class="w-full max-w-10 h-40 bg-indigo-500 dark:bg-indigo-500/80 rounded-t-md"></div>
+                  <span class="text-xs text-slate-400 mt-1">Mar</span>
+                </div>
+                <div class="flex flex-col items-center justify-end h-full flex-1 gap-1">
+                  <span class="text-xs font-medium text-slate-600 dark:text-slate-300">40</span>
+                  <div class="w-full max-w-10 h-28 bg-indigo-500 dark:bg-indigo-500/80 rounded-t-md"></div>
+                  <span class="text-xs text-slate-400 mt-1">Mié</span>
+                </div>
+                <div class="flex flex-col items-center justify-end h-full flex-1 gap-1">
+                  <span class="text-xs font-medium text-slate-600 dark:text-slate-300">70</span>
+                  <div class="w-full max-w-10 h-48 bg-indigo-500 dark:bg-indigo-500/80 rounded-t-md"></div>
+                  <span class="text-xs text-slate-400 mt-1">Jue</span>
+                </div>
+                <div class="flex flex-col items-center justify-end h-full flex-1 gap-1">
+                  <span class="text-xs font-medium text-slate-600 dark:text-slate-300">50</span>
+                  <div class="w-full max-w-10 h-36 bg-indigo-500 dark:bg-indigo-500/80 rounded-t-md"></div>
+                  <span class="text-xs text-slate-400 mt-1">Vie</span>
+                </div>
+                <div class="flex flex-col items-center justify-end h-full flex-1 gap-1">
+                  <span class="text-xs font-medium text-slate-600 dark:text-slate-300">22</span>
+                  <div class="w-full max-w-10 h-16 bg-indigo-300 dark:bg-indigo-500/50 rounded-t-md"></div>
+                  <span class="text-xs text-slate-400 mt-1">Sáb</span>
+                </div>
+                <div class="flex flex-col items-center justify-end h-full flex-1 gap-1">
+                  <span class="text-xs font-medium text-slate-600 dark:text-slate-300">27</span>
+                  <div class="w-full max-w-10 h-20 bg-indigo-300 dark:bg-indigo-500/50 rounded-t-md"></div>
+                  <span class="text-xs text-slate-400 mt-1">Dom</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="lg:w-80 shrink-0 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+              <h3 class="font-semibold mb-1">Insights rápidos</h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">Datos destacados de esta semana</p>
+              <ul class="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+                <li class="py-3 flex gap-2">
+                  <svg class="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  <span>Helix Sales Agent es el agente con más ejecuciones esta semana.</span>
+                </li>
+                <li class="py-3 flex gap-2">
+                  <svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  <span>2 contratos vencen en los próximos 30 días.</span>
+                </li>
+                <li class="py-3 flex gap-2">
+                  <svg class="w-4 h-4 text-sky-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 9l-5 5-4-4-4 4"/></svg>
+                  <span>El plan Pro concentra el 50% de los usuarios activos.</span>
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <!-- ===================== USUARIOS ===================== -->
+        <section id="section-usuarios" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-xl font-bold">Gestión de usuarios</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Cuentas de clientes registradas en la plataforma</p>
+            </div>
+            <button class="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Nuevo usuario
+            </button>
+          </div>
+
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-x-auto">
+            <table class="w-full text-sm min-w-[720px]">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-800 text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  <th class="px-4 py-3 font-medium">Nombre</th>
+                  <th class="px-4 py-3 font-medium">Email</th>
+                  <th class="px-4 py-3 font-medium">Plan</th>
+                  <th class="px-4 py-3 font-medium">Estado</th>
+                  <th class="px-4 py-3 font-medium text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="usuarios-tbody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===================== AGENTES ===================== -->
+        <section id="section-agentes" class="hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-xl font-bold">Gestión de agentes</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400">Agentes de IA desplegados y su configuración</p>
+            </div>
+          </div>
+          <div id="agentes-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- ===================== SKILLS ===================== -->
+        <section id="section-skills" class="hidden space-y-6">
+          <div>
+            <h2 class="text-xl font-bold">Skills</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Capacidades disponibles para equipar en los agentes</p>
+          </div>
+
+          <div class="rounded-lg border-l-4 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 p-4">
+            <h3 class="font-semibold text-indigo-900 dark:text-indigo-300 text-sm mb-1">¿Qué es una skill?</h3>
+            <p class="text-sm text-indigo-800 dark:text-indigo-200">Una skill es una capacidad modular que se puede habilitar en un agente para ampliar lo que es capaz de hacer, como navegar por la web, leer documentos, gestionar calendarios o ejecutar tareas de negocio. Los administradores pueden ver qué skills existen, cuántos agentes las tienen habilitadas y gestionarlas desde este catálogo.</p>
+          </div>
+
+          <div id="skills-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- ===================== CONTRATACIONES ===================== -->
+        <section id="section-contrataciones" class="hidden space-y-6">
+          <div>
+            <h2 class="text-xl font-bold">Contrataciones de agentes</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Contratos de alquiler de agentes por cliente</p>
+          </div>
+
+          <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-x-auto">
+            <table class="w-full text-sm min-w-[900px]">
+              <thead>
+                <tr class="border-b border-slate-200 dark:border-slate-800 text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  <th class="px-4 py-3 font-medium">Cliente</th>
+                  <th class="px-4 py-3 font-medium">Agente</th>
+                  <th class="px-4 py-3 font-medium">Skills</th>
+                  <th class="px-4 py-3 font-medium">Inicio</th>
+                  <th class="px-4 py-3 font-medium">Fin</th>
+                  <th class="px-4 py-3 font-medium">Importe</th>
+                  <th class="px-4 py-3 font-medium">Estado</th>
+                  <th class="px-4 py-3 font-medium text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="contratos-tbody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===================== ERRORES ===================== -->
+        <section id="section-errores" class="hidden space-y-6">
+          <div>
+            <h2 class="text-xl font-bold">Log de errores</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Ejecuciones fallidas que requieren atención</p>
+          </div>
+          <div id="errores-list" class="space-y-3"></div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================== MODALS (poblados dinámicamente) ===================== -->
+  <div id="modal-root"></div>
+
+  <!-- ===================== TOAST ===================== -->
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-[100] bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm font-medium px-4 py-2.5 rounded-lg shadow-lg transition-opacity"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     DATASETS
+  ========================================================= */
+  var TODAY = new Date('2026-08-23');
+
+  var SKILL_PRICES = {
+    'Navegación Web': 150,
+    'Lectura de Documentos': 120,
+    'Gestión de Calendarios': 100,
+    'Consulta de Información': 130,
+    'Ejecución de Tareas': 160
+  };
+
+  var SKILLS = [
+    {
+      id: 'skill-web',
+      nombre: 'Navegación Web',
+      descripcion: 'Permite al agente navegar por internet en tiempo real para obtener información actualizada.',
+      descripcionCompleta: 'Permite al agente navegar por internet en tiempo real, seguir enlaces y extraer contenido de páginas web para responder con información actualizada. Ideal para investigación de mercado y seguimiento de la competencia.',
+      casos: ['Investigar precios de la competencia', 'Verificar disponibilidad de un producto en un sitio externo', 'Recopilar noticias recientes sobre un tema']
+    },
+    {
+      id: 'skill-docs',
+      nombre: 'Lectura de Documentos',
+      descripcion: 'Permite leer, interpretar y extraer información de documentos PDF, Word y hojas de cálculo.',
+      descripcionCompleta: 'Permite leer, interpretar y extraer información estructurada de documentos PDF, Word y hojas de cálculo cargados por el cliente. El agente puede resumir, comparar o citar fragmentos específicos.',
+      casos: ['Resumir un contrato en PDF', 'Extraer cifras de una hoja de cálculo', 'Comparar dos versiones de un documento']
+    },
+    {
+      id: 'skill-cal',
+      nombre: 'Gestión de Calendarios',
+      descripcion: 'Permite crear, modificar y consultar eventos en calendarios conectados (Google Calendar, Outlook).',
+      descripcionCompleta: 'Permite crear, modificar, cancelar y consultar eventos en calendarios conectados como Google Calendar u Outlook, respetando disponibilidad y zonas horarias de los participantes.',
+      casos: ['Agendar una reunión con varios asistentes', 'Reprogramar un evento existente', 'Consultar huecos libres de un usuario']
+    },
+    {
+      id: 'skill-lookup',
+      nombre: 'Consulta de Información',
+      descripcion: 'Permite consultar bases de datos internas y catálogos de negocio para resolver preguntas.',
+      descripcionCompleta: 'Permite consultar bases de datos internas, catálogos de producto y sistemas de negocio del cliente para resolver preguntas concretas con datos verificados de la empresa.',
+      casos: ['Consultar el stock de un producto', 'Responder preguntas sobre políticas internas', 'Buscar el historial de un cliente en el CRM']
+    },
+    {
+      id: 'skill-task',
+      nombre: 'Ejecución de Tareas',
+      descripcion: 'Permite ejecutar flujos de trabajo predefinidos, como generar reportes o enviar notificaciones.',
+      descripcionCompleta: 'Permite ejecutar flujos de trabajo de negocio predefinidos, como generar reportes periódicos, enviar notificaciones o disparar procesos internos conectados a otras herramientas.',
+      casos: ['Generar un reporte semanal automático', 'Enviar una notificación cuando ocurre un evento', 'Disparar un flujo de aprobación interno']
+    }
+  ];
+
+  var AGENTES = [
+    {
+      id: 'agent-atlas',
+      nombre: 'Atlas Research Agent',
+      propietario: 'Vantex Corp',
+      estado: 'Activo',
+      skills: ['Navegación Web', 'Lectura de Documentos', 'Consulta de Información'],
+      prompt: 'Eres Atlas, un agente de investigación. Tu trabajo es navegar la web y leer documentos para responder preguntas de negocio con fuentes verificables. Responde siempre en español, cita tus fuentes y evita especular cuando no tengas información suficiente.'
+    },
+    {
+      id: 'agent-nova',
+      nombre: 'Nova Support Agent',
+      propietario: 'BrightLoop Inc',
+      estado: 'Fallando',
+      skills: ['Gestión de Calendarios', 'Consulta de Información', 'Ejecución de Tareas'],
+      prompt: 'Eres Nova, un agente de soporte al cliente. Gestionas el calendario del equipo, consultas el estado de los tickets y ejecutas flujos de resolución predefinidos. Mantén un tono cordial y escala a un humano cuando el caso lo requiera.'
+    },
+    {
+      id: 'agent-helix',
+      nombre: 'Helix Sales Agent',
+      propietario: 'Nordlink Solutions',
+      estado: 'Activo',
+      skills: ['Navegación Web', 'Ejecución de Tareas'],
+      prompt: 'Eres Helix, un agente de ventas. Investigas prospectos en la web y ejecutas tareas de seguimiento comercial como el envío de propuestas. Prioriza siempre la precisión de los datos del cliente antes de actuar.'
+    },
+    {
+      id: 'agent-orion',
+      nombre: 'Orion Ops Agent',
+      propietario: 'Quantiva',
+      estado: 'Inactivo',
+      skills: ['Lectura de Documentos', 'Gestión de Calendarios'],
+      prompt: 'Eres Orion, un agente de operaciones. Lees documentación interna de procesos y gestionas el calendario operativo del equipo. Confirma siempre los cambios de horario antes de aplicarlos.'
+    },
+    {
+      id: 'agent-vega',
+      nombre: 'Vega Analyst Agent',
+      propietario: 'FluxBase',
+      estado: 'Activo',
+      skills: ['Consulta de Información', 'Lectura de Documentos'],
+      prompt: 'Eres Vega, un agente analista de datos. Consultas fuentes internas y documentos para producir análisis claros y accionables. Presenta siempre los números con su contexto y evita conclusiones sin respaldo de datos.'
+    }
+  ];
+
+  var USUARIOS = [
+    { id: 'user-laura', nombre: 'Laura Gómez', email: 'laura.gomez@vantexcorp.com', empresa: 'Vantex Corp', plan: 'Enterprise', estado: 'Activo', alta: '12 de enero de 2026' },
+    { id: 'user-marcus', nombre: 'Marcus Chen', email: 'marcus.chen@brightloop.io', empresa: 'BrightLoop Inc', plan: 'Pro', estado: 'Activo', alta: '3 de febrero de 2026' },
+    { id: 'user-sofia', nombre: 'Sofia Ibáñez', email: 'sofia.ibanez@nordlink.eu', empresa: 'Nordlink Solutions', plan: 'Pro', estado: 'Suspendido', alta: '20 de octubre de 2025' },
+    { id: 'user-david', nombre: 'David Okafor', email: 'd.okafor@parallelworks.ai', empresa: 'Parallel Works', plan: 'Free', estado: 'Activo', alta: '8 de mayo de 2026' },
+    { id: 'user-elena', nombre: 'Elena Petrova', email: 'elena.petrova@quantiva.co', empresa: 'Quantiva', plan: 'Enterprise', estado: 'Pendiente de pago', alta: '15 de enero de 2026' },
+    { id: 'user-tom', nombre: 'Tom Richards', email: 'tom.richards@fluxbase.dev', empresa: 'FluxBase', plan: 'Pro', estado: 'Activo', alta: '2 de marzo de 2026' }
+  ];
+
+  var CONTRATOS = [
+    { id: 'contract-1', cliente: 'Vantex Corp', agente: 'Atlas Research Agent', skills: ['Navegación Web', 'Lectura de Documentos'], inicio: '2026-01-15', fin: '2026-07-15', meses: 6, importe: 1620, estado: 'Activo' },
+    { id: 'contract-2', cliente: 'BrightLoop Inc', agente: 'Nova Support Agent', skills: ['Gestión de Calendarios', 'Consulta de Información', 'Ejecución de Tareas'], inicio: '2026-03-01', fin: '2026-09-01', meses: 6, importe: 2340, estado: 'Activo' },
+    { id: 'contract-3', cliente: 'Nordlink Solutions', agente: 'Helix Sales Agent', skills: ['Navegación Web', 'Ejecución de Tareas'], inicio: '2025-11-10', fin: '2026-05-10', meses: 6, importe: 1860, estado: 'Vencido' },
+    { id: 'contract-4', cliente: 'Quantiva', agente: 'Orion Ops Agent', skills: ['Lectura de Documentos', 'Gestión de Calendarios'], inicio: '2026-02-01', fin: '2026-08-01', meses: 6, importe: 1320, estado: 'Pago pendiente' },
+    { id: 'contract-5', cliente: 'FluxBase', agente: 'Vega Analyst Agent', skills: ['Consulta de Información', 'Lectura de Documentos'], inicio: '2026-04-01', fin: '2026-10-01', meses: 6, importe: 1500, estado: 'Activo' }
+  ];
+
+  var ERRORES = [
+    { id: 'err-1', timestamp: '2026-08-22 14:32', agente: 'Nova Support Agent', tipo: 'Critical', mensaje: 'Fallo de conexión con el servicio de calendario externo tras 3 reintentos.', resuelto: false, traza: 'ConnectionError: Timeout after 3 retries\n  at CalendarService.connect (calendar_service.js:112)\n  at NovaAgent.syncCalendar (nova_agent.js:58)\n  at TaskRunner.execute (task_runner.js:201)\n  at TaskRunner.run (task_runner.js:87)\n  Caused by: ETIMEDOUT 198.51.100.24:443' },
+    { id: 'err-2', timestamp: '2026-08-22 09:10', agente: 'Atlas Research Agent', tipo: 'Timeout', mensaje: 'La navegación web excedió el tiempo máximo de respuesta (30s).', resuelto: false, traza: 'TimeoutError: Navigation exceeded 30000ms\n  at BrowserSession.goto (browser_session.js:74)\n  at WebBrowsingSkill.fetchPage (web_browsing.js:33)\n  at AtlasAgent.research (atlas_agent.js:120)\n  at TaskRunner.execute (task_runner.js:201)' },
+    { id: 'err-3', timestamp: '2026-08-21 22:47', agente: 'Orion Ops Agent', tipo: 'Authentication', mensaje: 'Token de acceso expirado al intentar leer el documento adjunto.', resuelto: false, traza: 'AuthError: Access token expired (exp=1755814020)\n  at DocumentReaderSkill.authorize (document_reader.js:19)\n  at DocumentReaderSkill.read (document_reader.js:41)\n  at OrionAgent.readAttachment (orion_agent.js:66)\n  at TaskRunner.execute (task_runner.js:201)' },
+    { id: 'err-4', timestamp: '2026-08-21 18:05', agente: 'Nova Support Agent', tipo: 'Warning', mensaje: 'Uso elevado de memoria durante la ejecución de una tarea programada.', resuelto: false, traza: 'MemoryWarning: Heap usage at 87% (612MB/704MB)\n  at ScheduledTask.run (scheduled_task.js:145)\n  at NovaAgent.executeTask (nova_agent.js:203)\n  at TaskRunner.execute (task_runner.js:201)' },
+    { id: 'err-5', timestamp: '2026-08-20 11:52', agente: 'Helix Sales Agent', tipo: 'Error', mensaje: 'No se pudo completar la tarea de negocio: parámetro de entrada inválido.', resuelto: false, traza: 'ValidationError: Missing required field "prospect_id"\n  at TaskExecutorSkill.validate (task_executor.js:28)\n  at TaskExecutorSkill.run (task_executor.js:52)\n  at HelixAgent.followUp (helix_agent.js:91)\n  at TaskRunner.execute (task_runner.js:201)' },
+    { id: 'err-6', timestamp: '2026-08-19 08:15', agente: 'Vega Analyst Agent', tipo: 'Critical', mensaje: 'El agente dejó de responder durante la consulta de datos internos.', resuelto: false, traza: 'ProcessHangError: No response after 60000ms\n  at DataLookupSkill.query (data_lookup.js:87)\n  at VegaAgent.analyze (vega_agent.js:134)\n  at TaskRunner.execute (task_runner.js:201)\n  at TaskRunner.watchdog (task_runner.js:250)' },
+    { id: 'err-7', timestamp: '2026-08-18 16:40', agente: 'Atlas Research Agent', tipo: 'Warning', mensaje: 'Límite de peticiones alcanzado en la fuente de datos externa.', resuelto: false, traza: 'RateLimitWarning: 429 Too Many Requests\n  at WebBrowsingSkill.fetchPage (web_browsing.js:41)\n  at AtlasAgent.research (atlas_agent.js:120)\n  at TaskRunner.execute (task_runner.js:201)' }
+  ];
+
+  var SECTION_META = {
+    dashboard: { title: 'Dashboard', subtitle: 'Resumen general de la plataforma' },
+    usuarios: { title: 'Usuarios', subtitle: 'Gestiona las cuentas de clientes' },
+    agentes: { title: 'Agentes', subtitle: 'Supervisa los agentes desplegados' },
+    skills: { title: 'Skills', subtitle: 'Catálogo de capacidades disponibles' },
+    contrataciones: { title: 'Contrataciones', subtitle: 'Contratos de alquiler de agentes' },
+    errores: { title: 'Log de errores', subtitle: 'Ejecuciones fallidas que requieren atención' }
+  };
+
+  /* =========================================================
+     STATE
+  ========================================================= */
+  var state = {
+    openDropdownId: null,
+    expandedAgents: {},
+    deletedUsers: {},
+    resolvedErrors: {}
+  };
+
+  /* =========================================================
+     HELPERS
+  ========================================================= */
+  function el(tag, className, html) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  }
+
+  function initials(name) {
+    return name.split(' ').map(function (p) { return p[0]; }).slice(0, 2).join('').toUpperCase();
+  }
+
+  function badgeClasses(type) {
+    var map = {
+      emerald: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
+      slate: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+      rose: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400',
+      amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400',
+      orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400',
+      sky: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-400',
+      violet: 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-400'
+    };
+    return 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + (map[type] || map.slate);
+  }
+
+  var ESTADO_COLOR = {
+    'Activo': 'emerald', 'Inactivo': 'slate', 'Fallando': 'rose', 'Suspendido': 'rose',
+    'Pendiente de pago': 'amber', 'Vencido': 'rose', 'Pago pendiente': 'amber'
+  };
+  var SEVERIDAD_COLOR = { 'Critical': 'rose', 'Error': 'orange', 'Warning': 'amber', 'Timeout': 'sky', 'Authentication': 'violet' };
+
+  function badge(text, colorKey) {
+    return '<span class="' + badgeClasses(colorKey) + '">' + text + '</span>';
+  }
+
+  function skillChip(name) {
+    return '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">' + name + '</span>';
+  }
+
+  function dropdownIconBtn(id) {
+    return '<button type="button" data-dropdown-toggle="' + id + '" class="w-8 h-8 inline-flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none" aria-label="Acciones">' +
+      '<svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>';
+  }
+
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.remove('hidden', 'opacity-0');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(function () {
+      t.classList.add('opacity-0');
+      setTimeout(function () { t.classList.add('hidden'); }, 200);
+    }, 2500);
+  }
+
+  function agentsWithSkill(skillName) {
+    return AGENTES.filter(function (a) { return a.skills.indexOf(skillName) !== -1; });
+  }
+
+  function contractsForCompany(empresa) {
+    return CONTRATOS.filter(function (c) { return c.cliente === empresa; });
+  }
+
+  /* =========================================================
+     RENDER: USUARIOS
+  ========================================================= */
+  function renderUsuarios() {
+    var tbody = document.getElementById('usuarios-tbody');
+    tbody.innerHTML = '';
+    USUARIOS.forEach(function (u) {
+      if (state.deletedUsers[u.id]) return;
+      var tr = el('tr', 'hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors');
+      tr.innerHTML =
+        '<td class="px-4 py-3">' +
+          '<div class="flex items-center gap-3">' +
+            '<div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 flex items-center justify-center text-xs font-semibold shrink-0">' + initials(u.nombre) + '</div>' +
+            '<span class="font-medium">' + u.nombre + '</span>' +
+          '</div>' +
+        '</td>' +
+        '<td class="px-4 py-3 text-slate-500 dark:text-slate-400">' + u.email + '</td>' +
+        '<td class="px-4 py-3">' + u.plan + '</td>' +
+        '<td class="px-4 py-3">' + badge(u.estado, ESTADO_COLOR[u.estado]) + '</td>' +
+        '<td class="px-4 py-3 text-right relative">' +
+          dropdownIconBtn('user-' + u.id) +
+          '<div data-dropdown="user-' + u.id + '" class="hidden absolute right-4 mt-1 w-40 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg z-20 text-left">' +
+            '<button data-action="user-detail" data-id="' + u.id + '" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700">Ver detalle</button>' +
+            '<button data-action="user-delete" data-id="' + u.id + '" class="w-full text-left px-3 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-slate-50 dark:hover:bg-slate-700">Eliminar</button>' +
+          '</div>' +
+        '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  /* =========================================================
+     RENDER: AGENTES
+  ========================================================= */
+  function renderAgentes() {
+    var grid = document.getElementById('agentes-grid');
+    grid.innerHTML = '';
+    AGENTES.forEach(function (a) {
+      var expanded = !!state.expandedAgents[a.id];
+      var card = el('article', 'rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow relative');
+      card.innerHTML =
+        '<div class="flex items-start justify-between gap-2">' +
+          '<div class="min-w-0">' +
+            '<h3 class="text-lg font-semibold truncate">' + a.nombre + '</h3>' +
+            '<p class="text-sm text-slate-500 dark:text-slate-400">' + a.propietario + '</p>' +
+          '</div>' +
+          '<div class="flex items-center gap-1 shrink-0">' +
+            badge(a.estado, ESTADO_COLOR[a.estado]) +
+            dropdownIconBtn('agent-' + a.id) +
+          '</div>' +
+        '</div>' +
+        '<div data-dropdown="agent-' + a.id + '" class="hidden absolute right-5 top-14 w-40 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg z-20">' +
+          '<button data-action="agent-config" data-id="' + a.id + '" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700">Configurar</button>' +
+          '<button data-action="agent-delete" data-id="' + a.id + '" class="w-full text-left px-3 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-slate-50 dark:hover:bg-slate-700">Eliminar</button>' +
+        '</div>' +
+        '<div class="mt-4">' +
+          '<button data-action="toggle-skills" data-id="' + a.id + '" class="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none rounded">' +
+            '<span data-skills-label>' + (expanded ? 'Ocultar skills' : 'Ver skills (' + a.skills.length + ')') + '</span>' +
+            '<svg data-chevron class="w-4 h-4 transition-transform duration-300 ' + (expanded ? 'rotate-180' : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>' +
+          '</button>' +
+          '<div data-skills-panel class="overflow-hidden transition-all duration-300 ease-in-out ' + (expanded ? 'max-h-40 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0') + '">' +
+            '<div class="flex flex-wrap gap-2">' + a.skills.map(skillChip).join('') + '</div>' +
+          '</div>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  /* =========================================================
+     RENDER: SKILLS
+  ========================================================= */
+  function renderSkills() {
+    var grid = document.getElementById('skills-grid');
+    grid.innerHTML = '';
+    SKILLS.forEach(function (s) {
+      var count = agentsWithSkill(s.nombre).length;
+      var card = el('article', 'rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow relative');
+      card.innerHTML =
+        '<div class="flex items-start justify-between gap-2">' +
+          '<div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 flex items-center justify-center shrink-0">' +
+            '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>' +
+          '</div>' +
+          dropdownIconBtn('skill-' + s.id) +
+        '</div>' +
+        '<div data-dropdown="skill-' + s.id + '" class="hidden absolute right-5 top-14 w-40 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg z-20">' +
+          '<button data-action="skill-detail" data-id="' + s.id + '" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700">Ver detalle</button>' +
+          '<button data-action="skill-delete" data-id="' + s.id + '" class="w-full text-left px-3 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-slate-50 dark:hover:bg-slate-700">Eliminar</button>' +
+        '</div>' +
+        '<h3 class="font-semibold text-base mt-3">' + s.nombre + '</h3>' +
+        '<p class="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">' + s.descripcion + '</p>' +
+        '<div class="flex items-center gap-1.5 mt-3 text-xs text-slate-500 dark:text-slate-400">' +
+          '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/></svg>' +
+          '<span>' + count + ' agentes habilitados</span>' +
+        '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  /* =========================================================
+     RENDER: CONTRATOS
+  ========================================================= */
+  function renderContratos() {
+    var tbody = document.getElementById('contratos-tbody');
+    tbody.innerHTML = '';
+    CONTRATOS.forEach(function (c) {
+      var visibleSkills = c.skills.slice(0, 2);
+      var extra = c.skills.length - visibleSkills.length;
+      var skillsHtml = visibleSkills.map(skillChip).join(' ') + (extra > 0 ? ' <span class="text-xs text-slate-400">+' + extra + '</span>' : '');
+      var tr = el('tr', 'hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors align-top');
+      tr.innerHTML =
+        '<td class="px-4 py-3 font-medium">' + c.cliente + '</td>' +
+        '<td class="px-4 py-3 text-slate-600 dark:text-slate-300">' + c.agente + '</td>' +
+        '<td class="px-4 py-3"><div class="flex flex-wrap gap-1 max-w-[220px]">' + skillsHtml + '</div></td>' +
+        '<td class="px-4 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">' + c.inicio + '</td>' +
+        '<td class="px-4 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">' + c.fin + '</td>' +
+        '<td class="px-4 py-3 font-medium whitespace-nowrap">$' + c.importe.toLocaleString('en-US') + '</td>' +
+        '<td class="px-4 py-3">' + badge(c.estado, ESTADO_COLOR[c.estado]) + '</td>' +
+        '<td class="px-4 py-3 text-right relative">' +
+          dropdownIconBtn('contract-' + c.id) +
+          '<div data-dropdown="contract-' + c.id + '" class="hidden absolute right-4 mt-1 w-36 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg z-20 text-left">' +
+            '<button data-action="contract-detail" data-id="' + c.id + '" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700">Ver detalle</button>' +
+          '</div>' +
+        '</td>';
+      tbody.appendChild(tr);
+    });
+  }
+
+  /* =========================================================
+     RENDER: ERRORES
+  ========================================================= */
+  function renderErrores() {
+    var list = document.getElementById('errores-list');
+    list.innerHTML = '';
+    ERRORES.forEach(function (e) {
+      var resuelto = !!state.resolvedErrors[e.id];
+      var article = el('article', 'rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm relative transition-opacity ' + (resuelto ? 'opacity-60' : ''));
+      article.innerHTML =
+        '<div class="flex items-start justify-between gap-3">' +
+          '<div class="min-w-0">' +
+            '<div class="flex items-center gap-2 flex-wrap">' +
+              badge(e.tipo, SEVERIDAD_COLOR[e.tipo]) +
+              (resuelto ? badge('Resuelto', 'slate') : '') +
+              '<span class="font-medium text-sm">' + e.agente + '</span>' +
+              '<span class="text-xs text-slate-400">' + e.timestamp + '</span>' +
+            '</div>' +
+            '<p class="text-sm text-slate-600 dark:text-slate-300 mt-1.5">' + e.mensaje + '</p>' +
+          '</div>' +
+          '<div class="relative shrink-0">' +
+            dropdownIconBtn('error-' + e.id) +
+            '<div data-dropdown="error-' + e.id + '" class="hidden absolute right-0 mt-1 w-44 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg z-20">' +
+              '<button data-action="error-detail" data-id="' + e.id + '" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700">Ver detalle</button>' +
+              '<button data-action="error-resolve" data-id="' + e.id + '" ' + (resuelto ? 'disabled' : '') + ' class="w-full text-left px-3 py-2 text-sm ' + (resuelto ? 'text-slate-300 dark:text-slate-600 cursor-not-allowed' : 'hover:bg-slate-50 dark:hover:bg-slate-700') + '">Marcar como resuelto</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      list.appendChild(article);
+    });
+  }
+
+  /* =========================================================
+     MODALS
+  ========================================================= */
+  function buildModalShell(id, contentHtml, maxWidthClass) {
+    var wrap = el('div', 'fixed inset-0 z-50');
+    wrap.id = id;
+    wrap.innerHTML =
+      '<div data-backdrop class="absolute inset-0 min-h-full flex items-center justify-center p-4 bg-slate-900/50 dark:bg-slate-950/70">' +
+        '<div data-panel class="relative bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full ' + (maxWidthClass || 'max-w-lg') + ' max-h-[85vh] overflow-y-auto">' +
+          '<button data-close class="absolute top-4 right-4 w-8 h-8 inline-flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none" aria-label="Cerrar">' +
+            '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>' +
+          '</button>' +
+          '<div class="p-6">' + contentHtml + '</div>' +
+        '</div>' +
+      '</div>';
+    return wrap;
+  }
+
+  function openModal(id, contentHtml, maxWidthClass) {
+    closeAllDropdowns();
+    var root = document.getElementById('modal-root');
+    root.innerHTML = '';
+    var modal = buildModalShell(id, contentHtml, maxWidthClass);
+    root.appendChild(modal);
+    modal.querySelector('[data-backdrop]').addEventListener('click', closeModal);
+    modal.querySelector('[data-close]').addEventListener('click', closeModal);
+    modal.querySelector('[data-panel]').addEventListener('click', function (ev) { ev.stopPropagation(); });
+    return modal;
+  }
+
+  function closeModal() {
+    document.getElementById('modal-root').innerHTML = '';
+  }
+
+  function openUserDetail(id) {
+    var u = USUARIOS.filter(function (x) { return x.id === id; })[0];
+    if (!u) return;
+    var contracts = contractsForCompany(u.empresa);
+    var agentsHtml = contracts.length
+      ? contracts.map(function (c) { return '<li>' + c.agente + '</li>'; }).join('')
+      : '<li class="text-slate-400">Sin agentes contratados</li>';
+    var totalSpent = contracts.reduce(function (sum, c) { return sum + c.importe; }, 0);
+    var html =
+      '<div class="flex items-center gap-4 mb-5">' +
+        '<div class="w-14 h-14 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 flex items-center justify-center text-lg font-semibold">' + initials(u.nombre) + '</div>' +
+        '<div>' +
+          '<h3 class="text-lg font-semibold">' + u.nombre + '</h3>' +
+          '<p class="text-sm text-slate-500 dark:text-slate-400">' + u.email + '</p>' +
+        '</div>' +
+      '</div>' +
+      '<dl class="grid grid-cols-2 gap-y-4 gap-x-4 text-sm">' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Empresa</dt><dd class="font-medium mt-0.5">' + u.empresa + '</dd></div>' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Plan</dt><dd class="font-medium mt-0.5">' + u.plan + '</dd></div>' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Estado</dt><dd class="mt-0.5">' + badge(u.estado, ESTADO_COLOR[u.estado]) + '</dd></div>' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Fecha de alta</dt><dd class="font-medium mt-0.5">' + u.alta + '</dd></div>' +
+        '<div class="col-span-2"><dt class="text-slate-500 dark:text-slate-400">Agentes contratados</dt><dd class="mt-1"><ul class="list-disc list-inside">' + agentsHtml + '</ul></dd></div>' +
+        '<div class="col-span-2"><dt class="text-slate-500 dark:text-slate-400">Total gastado</dt><dd class="font-semibold mt-0.5">$' + totalSpent.toLocaleString('en-US') + '</dd></div>' +
+      '</dl>';
+    openModal('modal-user-detail', html);
+  }
+
+  function openUserDeleteConfirm(id) {
+    var u = USUARIOS.filter(function (x) { return x.id === id; })[0];
+    if (!u) return;
+    var html =
+      '<h3 class="text-lg font-semibold mb-2">¿Eliminar a ' + u.nombre + '?</h3>' +
+      '<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Esta acción no se puede deshacer.</p>' +
+      '<div class="flex justify-end gap-2">' +
+        '<button data-close class="px-4 py-2 rounded-md text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Cancelar</button>' +
+        '<button data-action="confirm-delete-user" data-id="' + u.id + '" class="px-4 py-2 rounded-md text-sm font-medium bg-rose-600 hover:bg-rose-700 text-white transition-colors">Eliminar</button>' +
+      '</div>';
+    var modal = openModal('modal-user-delete', html, 'max-w-sm');
+    modal.querySelector('[data-action="confirm-delete-user"]').addEventListener('click', function () {
+      state.deletedUsers[u.id] = true;
+      renderUsuarios();
+      closeModal();
+      toast('Usuario eliminado');
+    });
+  }
+
+  function openAgentConfig(id) {
+    var a = AGENTES.filter(function (x) { return x.id === id; })[0];
+    if (!a) return;
+    var html =
+      '<h3 class="text-lg font-semibold mb-4">Configurar — ' + a.nombre + '</h3>' +
+      '<dl class="grid grid-cols-2 gap-4 text-sm mb-4">' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Propietario</dt><dd class="font-medium mt-0.5">' + a.propietario + '</dd></div>' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Estado</dt><dd class="mt-0.5">' + badge(a.estado, ESTADO_COLOR[a.estado]) + '</dd></div>' +
+      '</dl>' +
+      '<label class="block text-sm font-medium mb-1.5">Prompt de sistema</label>' +
+      '<textarea class="w-full h-48 rounded-md border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-mono text-sm p-3 focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none">' + a.prompt + '</textarea>' +
+      '<div class="flex justify-end gap-2 mt-5">' +
+        '<button data-close class="px-4 py-2 rounded-md text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Cancelar</button>' +
+        '<button data-action="save-config" class="px-4 py-2 rounded-md text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition-colors">Guardar cambios</button>' +
+      '</div>';
+    var modal = openModal('modal-agent-config', html, 'max-w-xl');
+    modal.querySelector('[data-action="save-config"]').addEventListener('click', function () {
+      closeModal();
+      toast('Cambios guardados');
+    });
+  }
+
+  function openSkillDetail(id) {
+    var s = SKILLS.filter(function (x) { return x.id === id; })[0];
+    if (!s) return;
+    var agents = agentsWithSkill(s.nombre);
+    var agentsHtml = agents.length
+      ? '<div class="flex flex-wrap gap-2">' + agents.map(function (a) { return skillChip(a.nombre); }).join('') + '</div>'
+      : '<p class="text-slate-400 text-sm">Ningún agente la tiene habilitada actualmente.</p>';
+    var html =
+      '<h3 class="text-lg font-semibold mb-2">' + s.nombre + '</h3>' +
+      '<p class="text-sm text-slate-600 dark:text-slate-300 mb-5">' + s.descripcionCompleta + '</p>' +
+      '<h4 class="text-sm font-semibold mb-2">Agentes que la tienen habilitada</h4>' +
+      agentsHtml +
+      '<h4 class="text-sm font-semibold mt-5 mb-2">Casos de uso típicos</h4>' +
+      '<ul class="list-disc list-inside text-sm text-slate-600 dark:text-slate-300 space-y-1">' + s.casos.map(function (c) { return '<li>' + c + '</li>'; }).join('') + '</ul>';
+    openModal('modal-skill-detail', html);
+  }
+
+  function daysBetween(d1, d2) {
+    return Math.round((d2 - d1) / (1000 * 60 * 60 * 24));
+  }
+
+  function openContractDetail(id) {
+    var c = CONTRATOS.filter(function (x) { return x.id === id; })[0];
+    if (!c) return;
+    var rows = c.skills.map(function (name) {
+      var price = SKILL_PRICES[name] || 0;
+      var subtotal = price * c.meses;
+      return '<tr class="border-t border-slate-100 dark:border-slate-800">' +
+        '<td class="py-2 pr-3">' + name + '</td>' +
+        '<td class="py-2 pr-3 text-right">$' + price + '</td>' +
+        '<td class="py-2 pr-3 text-right">' + c.meses + '</td>' +
+        '<td class="py-2 text-right font-medium">$' + subtotal.toLocaleString('en-US') + '</td>' +
+      '</tr>';
+    }).join('');
+    var vencePronto = c.estado === 'Activo' && daysBetween(TODAY, new Date(c.fin)) >= 0 && daysBetween(TODAY, new Date(c.fin)) <= 45;
+    var html =
+      '<div class="mb-5">' +
+        '<h3 class="text-lg font-semibold">' + c.cliente + '</h3>' +
+        '<p class="text-sm text-slate-500 dark:text-slate-400">Agente: ' + c.agente + '</p>' +
+      '</div>' +
+      '<dl class="grid grid-cols-2 gap-4 text-sm mb-5">' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Periodo</dt><dd class="font-medium mt-0.5">' + c.inicio + ' – ' + c.fin + (vencePronto ? ' <span class="text-amber-600 dark:text-amber-400 text-xs">(Vence pronto)</span>' : '') + '</dd></div>' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Estado</dt><dd class="mt-0.5">' + badge(c.estado, ESTADO_COLOR[c.estado]) + '</dd></div>' +
+        '<div class="col-span-2"><dt class="text-slate-500 dark:text-slate-400">Importe total</dt><dd class="font-semibold mt-0.5">$' + c.importe.toLocaleString('en-US') + '</dd></div>' +
+      '</dl>' +
+      '<h4 class="text-sm font-semibold mb-2">Desglose del contrato</h4>' +
+      '<div class="overflow-x-auto">' +
+        '<table class="w-full text-sm">' +
+          '<thead><tr class="text-left text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400"><th class="pb-2">Skill</th><th class="pb-2 text-right">Precio mensual</th><th class="pb-2 text-right">Meses</th><th class="pb-2 text-right">Subtotal</th></tr></thead>' +
+          '<tbody>' + rows + '<tr class="border-t border-slate-200 dark:border-slate-700 font-semibold"><td class="pt-2" colspan="3">Total</td><td class="pt-2 text-right">$' + c.importe.toLocaleString('en-US') + '</td></tr></tbody>' +
+        '</table>' +
+      '</div>';
+    openModal('modal-contract-detail', html, 'max-w-xl');
+  }
+
+  function openErrorDetail(id) {
+    var e = ERRORES.filter(function (x) { return x.id === id; })[0];
+    if (!e) return;
+    renderErrorModalContent(e);
+  }
+
+  function renderErrorModalContent(e) {
+    var resuelto = !!state.resolvedErrors[e.id];
+    var html =
+      '<div class="flex items-center gap-2 flex-wrap mb-3">' +
+        badge(e.tipo, SEVERIDAD_COLOR[e.tipo]) +
+        (resuelto ? badge('Resuelto', 'slate') : '') +
+      '</div>' +
+      '<dl class="grid grid-cols-2 gap-4 text-sm mb-4">' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Agente</dt><dd class="font-medium mt-0.5">' + e.agente + '</dd></div>' +
+        '<div><dt class="text-slate-500 dark:text-slate-400">Timestamp</dt><dd class="font-medium mt-0.5">' + e.timestamp + '</dd></div>' +
+      '</dl>' +
+      '<h4 class="text-sm font-semibold mb-1">Mensaje</h4>' +
+      '<p class="text-sm text-slate-600 dark:text-slate-300 mb-4">' + e.mensaje + '</p>' +
+      '<h4 class="text-sm font-semibold mb-1">Traza completa</h4>' +
+      '<pre class="bg-slate-900 text-slate-100 dark:bg-black rounded-md p-4 text-xs overflow-x-auto whitespace-pre-wrap">' + e.traza + '</pre>' +
+      '<div class="flex justify-end gap-2 mt-5">' +
+        '<button data-close class="px-4 py-2 rounded-md text-sm font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Cerrar</button>' +
+        (resuelto ? '' : '<button data-action="resolve-in-modal" data-id="' + e.id + '" class="px-4 py-2 rounded-md text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition-colors">Marcar como resuelto</button>') +
+      '</div>';
+    var modal = openModal('modal-error-detail', html, 'max-w-xl');
+    var resolveBtn = modal.querySelector('[data-action="resolve-in-modal"]');
+    if (resolveBtn) {
+      resolveBtn.addEventListener('click', function () {
+        resolveError(e.id);
+        renderErrorModalContent(e);
+      });
+    }
+  }
+
+  function resolveError(id) {
+    state.resolvedErrors[id] = true;
+    renderErrores();
+    toast('Error marcado como resuelto');
+  }
+
+  /* =========================================================
+     DROPDOWNS
+  ========================================================= */
+  function closeAllDropdowns() {
+    document.querySelectorAll('[data-dropdown]').forEach(function (d) { d.classList.add('hidden'); });
+    state.openDropdownId = null;
+  }
+
+  function toggleDropdown(id) {
+    var target = document.querySelector('[data-dropdown="' + id + '"]');
+    if (!target) return;
+    var isOpen = !target.classList.contains('hidden');
+    closeAllDropdowns();
+    if (!isOpen) {
+      target.classList.remove('hidden');
+      state.openDropdownId = id;
+    }
+  }
+
+  /* =========================================================
+     SKILLS TOGGLE (agents)
+  ========================================================= */
+  function toggleAgentSkills(id, cardEl) {
+    state.expandedAgents[id] = !state.expandedAgents[id];
+    var expanded = state.expandedAgents[id];
+    var panel = cardEl.querySelector('[data-skills-panel]');
+    var chevron = cardEl.querySelector('[data-chevron]');
+    var label = cardEl.querySelector('[data-skills-label]');
+    var agent = AGENTES.filter(function (a) { return a.id === id; })[0];
+    if (expanded) {
+      panel.classList.remove('max-h-0', 'opacity-0', 'mt-0');
+      panel.classList.add('max-h-40', 'opacity-100', 'mt-3');
+      chevron.classList.add('rotate-180');
+      label.textContent = 'Ocultar skills';
+    } else {
+      panel.classList.remove('max-h-40', 'opacity-100', 'mt-3');
+      panel.classList.add('max-h-0', 'opacity-0', 'mt-0');
+      chevron.classList.remove('rotate-180');
+      label.textContent = 'Ver skills (' + agent.skills.length + ')';
+    }
+  }
+
+  /* =========================================================
+     NAV
+  ========================================================= */
+  function showSection(sectionId) {
+    Object.keys(SECTION_META).forEach(function (key) {
+      var sec = document.getElementById('section-' + key);
+      if (sec) sec.classList.toggle('hidden', key !== sectionId);
+      var btn = document.querySelector('.nav-btn[data-section="' + key + '"]');
+      if (btn) setNavActive(btn, key === sectionId);
+    });
+    document.getElementById('header-title').textContent = SECTION_META[sectionId].title;
+    document.getElementById('header-subtitle').textContent = SECTION_META[sectionId].subtitle;
+    closeAllDropdowns();
+    closeModal();
+  }
+
+  function setNavActive(btn, active) {
+    if (active) {
+      btn.className = 'nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-medium border-l-2 border-indigo-600';
+    } else {
+      btn.className = 'nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 outline-none border-l-2 border-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800';
+    }
+  }
+
+  /* =========================================================
+     DARK MODE
+  ========================================================= */
+  function updateThemeIcon() {
+    var isDark = document.documentElement.classList.contains('dark');
+    document.getElementById('icon-sun').classList.toggle('hidden', !isDark);
+    document.getElementById('icon-moon').classList.toggle('hidden', isDark);
+  }
+
+  function setTheme(mode) {
+    document.documentElement.classList.toggle('dark', mode === 'dark');
+    try { localStorage.setItem('agenthub-theme', mode); } catch (e) {}
+    updateThemeIcon();
+  }
+
+  /* =========================================================
+     EVENT DELEGATION
+  ========================================================= */
+  document.addEventListener('click', function (ev) {
+    var toggle = ev.target.closest('[data-dropdown-toggle]');
+    if (toggle) {
+      ev.stopPropagation();
+      toggleDropdown(toggle.getAttribute('data-dropdown-toggle'));
+      return;
+    }
+
+    var actionEl = ev.target.closest('[data-action]');
+    if (actionEl) {
+      var action = actionEl.getAttribute('data-action');
+      var id = actionEl.getAttribute('data-id');
+      switch (action) {
+        case 'user-detail': closeAllDropdowns(); openUserDetail(id); break;
+        case 'user-delete': closeAllDropdowns(); openUserDeleteConfirm(id); break;
+        case 'agent-config': closeAllDropdowns(); openAgentConfig(id); break;
+        case 'agent-delete':
+          closeAllDropdowns();
+          toast('Eliminación de agentes deshabilitada en este prototipo');
+          break;
+        case 'toggle-skills':
+          closeAllDropdowns();
+          toggleAgentSkills(id, actionEl.closest('article'));
+          break;
+        case 'skill-detail': closeAllDropdowns(); openSkillDetail(id); break;
+        case 'skill-delete':
+          closeAllDropdowns();
+          toast('Eliminación de skills deshabilitada en este prototipo');
+          break;
+        case 'contract-detail': closeAllDropdowns(); openContractDetail(id); break;
+        case 'error-detail': closeAllDropdowns(); openErrorDetail(id); break;
+        case 'error-resolve': closeAllDropdowns(); resolveError(id); break;
+      }
+      return;
+    }
+
+    if (!ev.target.closest('[data-dropdown]')) {
+      closeAllDropdowns();
+    }
+  });
+
+  document.getElementById('theme-toggle').addEventListener('click', function () {
+    var isDark = document.documentElement.classList.contains('dark');
+    setTheme(isDark ? 'light' : 'dark');
+  });
+
+  document.querySelectorAll('.nav-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      showSection(btn.getAttribute('data-section'));
+    });
+  });
+
+  /* =========================================================
+     INIT
+  ========================================================= */
+  updateThemeIcon();
+  renderUsuarios();
+  renderAgentes();
+  renderSkills();
+  renderContratos();
+  renderErrores();
+  showSection('dashboard');
+})();
+</script>
+</body>
+</html>

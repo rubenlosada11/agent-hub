@@ -103,13 +103,13 @@ Cada agente tiene además un **prompt de sistema** hardcodeado (2-4 frases, text
 
 | Cliente | Agente | Skills contratadas | Inicio | Fin | Importe total | Estado |
 |---|---|---|---|---|---|---|
-| Vantex Corp | Atlas Research Agent | Navegación Web, Lectura de Documentos | 2026-01-15 | 2026-07-15 | $2,400 | Activo |
-| BrightLoop Inc | Nova Support Agent | Gestión de Calendarios, Consulta de Información, Ejecución de Tareas | 2026-03-01 | 2026-09-01 | $3,600 | Activo |
-| Nordlink Solutions | Helix Sales Agent | Navegación Web, Ejecución de Tareas | 2025-11-10 | 2026-05-10 | $1,800 | Vencido |
-| Quantiva | Orion Ops Agent | Lectura de Documentos, Gestión de Calendarios | 2026-02-01 | 2026-08-01 | $2,000 | Pago pendiente |
-| FluxBase | Vega Analyst Agent | Consulta de Información, Lectura de Documentos | 2026-04-01 | 2026-10-01 | $2,200 | Activo |
+| Vantex Corp | Atlas Research Agent | Navegación Web, Lectura de Documentos | 2026-01-15 | 2026-07-15 | $1,620 | Activo |
+| BrightLoop Inc | Nova Support Agent | Gestión de Calendarios, Consulta de Información, Ejecución de Tareas | 2026-03-01 | 2026-09-01 | $2,340 | Activo |
+| Nordlink Solutions | Helix Sales Agent | Navegación Web, Ejecución de Tareas | 2025-11-10 | 2026-05-10 | $1,860 | Vencido |
+| Quantiva | Orion Ops Agent | Lectura de Documentos, Gestión de Calendarios | 2026-02-01 | 2026-08-01 | $1,320 | Pago pendiente |
+| FluxBase | Vega Analyst Agent | Consulta de Información, Lectura de Documentos | 2026-04-01 | 2026-10-01 | $1,500 | Activo |
 
-Cada skill contratada tiene un **precio individual mensual** hardcodeado (ej. Navegación Web $150/mes, Lectura de Documentos $120/mes, Gestión de Calendarios $100/mes, Consulta de Información $130/mes, Ejecución de Tareas $160/mes) usado para mostrar el desglose (subtotal por skill × meses de contrato = importe total, ajustado de forma coherente con el importe total de la tabla).
+Todos los contratos tienen una duración de 6 meses. Cada skill contratada tiene un **precio individual mensual** hardcodeado (Navegación Web $150/mes, Lectura de Documentos $120/mes, Gestión de Calendarios $100/mes, Consulta de Información $130/mes, Ejecución de Tareas $160/mes) usado para mostrar el desglose (subtotal por skill = precio mensual × 6 meses; la suma de subtotales es exactamente igual al importe total de la tabla, sin excepción).
 
 ### 4.5 Log de errores — mínimo 6, usar estos 7
 
