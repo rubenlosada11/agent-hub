@@ -28,7 +28,9 @@ Todos los datos (usuarios, agentes, skills, contratos, errores) son ficticios pe
 
 ## Cómo revisarlo
 
-El prototipo no requiere instalación ni backend: basta con abrir `index.html` en un navegador para explorar el panel completo con datos precargados.
+**Demo pública:** [agenthub.rubenlosada.com](http://agenthub.rubenlosada.com/)
+
+El prototipo también puede revisarse localmente: no requiere instalación ni backend, basta con abrir `index.html` en un navegador para explorar el panel completo con datos precargados.
 
 La especificación funcional completa del proyecto —alcance, comportamiento esperado de cada componente y criterios de aceptación— está documentada en [`SPECS.md`](./SPECS.md).
 
